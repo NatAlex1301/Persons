@@ -3,126 +3,42 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Collections.Generic;
 using SendGrid.Helpers.Errors.Model;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using System.Threading.Tasks;
 
-
-internal class Program
+namespace Persons
 {
-    public static List<Person> Persons { get; private set; } = new();
-
-    public static (string fullName,string birthDate) GetPerson()
-
-    {
-        Console.WriteLine("Введите ФИО:");
-        var fullName = Console.ReadLine();
-        Console.WriteLine("Введите дату рождения:");
-        var birthDate = Console.ReadLine();
-        
-        return(fullName,birthDate);
-    }
-    public static void CreatePerson(string fullName,string birthDate)
-        
-    {
-        var id = Persons.Count+1;
-        var person = new Person(fullName, birthDate, id);
-        Persons.Add(person);
-       
-
-    }
-    public static void PrintPersons()
-    {
-        foreach (var person in Persons)
+    internal class Program
+    {     
+        private static async Task Main(string[] args)
         {
-            Console.WriteLine("ID:" + person.Id);
-            Console.WriteLine(person.FullName);
-            Console.WriteLine(person.BirthDate);
-        }
 
+            var builder = Host.CreateApplicationBuilder(args);
+            builder.Services.AddHostedService<Worker>();
+            var host = builder.Build();
+            host.RunAsync();
 
-    }
-    public static void RemovePerson(int id)
-    {
-        try
-        {
-            var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
+            Console.WriteLine("Нажмите C для завершения");
 
-                throw new NotFoundException($"Человек с идентификатором {id} не найден");
-            Persons.Remove(personToDelete);
-            Console.WriteLine("Данные удалены");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Ошибка: {ex.Message}");
-        }
-        Console.ReadLine();
-        
-        
-    }
-
-        
-
-    private static void Main(string[] args)
-    {
-        Console.WriteLine
-            ("""
-            Для ввода данных введите команду /new
-            Для просмотра данных введите команду /show
-            Для остановки приложения введите команду /stop
-            Для удаления данных введите команду /delete            
-            """);
-
-        while (true)
-        {
-            string command = Console.ReadLine();
-
-            switch (command)
+            while (true)
             {
-                case "/new":
-                    
-                    var (fullName,birthDate)= GetPerson();
-                    CreatePerson(fullName,birthDate);
+                var keyPressed = Console.ReadKey().Key;
 
-                    Console.WriteLine("Введите следующую команду:");
-                    continue;
-
-
-                case "/show":
-                    PrintPersons();
-                    Console.WriteLine("Введите следующую команду:");
-                    continue;
-
-                case "/stop":
+                if (keyPressed == ConsoleKey.C)
+                {
+                    await host.StopAsync();
                     break;
+                }
+                else
+                {
+                    Console.WriteLine($"Вы ввели{keyPressed}");
+                }
 
 
-                case "/delete":                                       
-                                                            
-                    Console.WriteLine("Введите ID для удаления:");
-                    string input = Console.ReadLine();
-
-                    if (!int.TryParse(input, out int id))
-                    {
-                        Console.WriteLine("Введены некорректные данные");
-                        continue;
-                    }
-                                        
-                    RemovePerson(id);
-                    continue;
-                                                                 
-                default:
-                    Console.WriteLine("Вы ввели неверную команду");
-                    continue;
             }
-            break;
+
 
         }
     }
-       
-
-
-
-    
-
 }
-    
-    
-

@@ -1,4 +1,4 @@
-﻿class Person
+﻿public class Person
 {
     public int Id { get; init; }
     public string FullName { get; init; }
@@ -10,5 +10,5 @@
         BirthDate = birthDate;
 
     }
-   
+    
 }

@@ -17,26 +17,9 @@ namespace Persons
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
             var host = builder.Build();
-            host.RunAsync();
+            await host.RunAsync();
 
-            Console.WriteLine("Нажмите C для завершения");
-
-            while (true)
-            {
-                var keyPressed = Console.ReadKey().Key;
-
-                if (keyPressed == ConsoleKey.C)
-                {
-                    await host.StopAsync();
-                    break;
-                }
-                else
-                {
-                    Console.WriteLine($"Вы ввели{keyPressed}");
-                }
-
-
-            }
+           
 
 
         }

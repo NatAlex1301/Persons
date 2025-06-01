@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +12,7 @@ namespace Persons
 {
     public class Worker() : BackgroundService
     {
-        public static List<Person> Persons { get; private set; } = new();
-        int loop = 0;
-
+        public static List<Person> Persons { get; private set; } = new();        
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
@@ -23,36 +22,48 @@ namespace Persons
                            Для остановки приложения введите команду /stop
                            Для удаления данных введите команду /delete            
                            """);
+
             while (!stoppingToken.IsCancellationRequested)
             {
-               
-
-                string command = Console.ReadLine();
-
+                string? command = Console.ReadLine();
+                if (command == null)
+                {
+                    Console.WriteLine("Нет данных");
+                    continue;
+                }
+                
                 switch (command)
                 {
                     case "/new":
 
                         var (fullName, birthDate) = GetPerson();
-                        CreatePerson(fullName, birthDate);
 
-                        Console.WriteLine("Введите следующую команду:");
-                        continue;
+                        if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
+                        {
+                            Console.WriteLine("Нет данных");
+                            GetPerson();
+                        }
+                        else
+                        {
+                            CreatePerson(fullName, birthDate);
+                        }                                                  
+                     continue;
 
 
                     case "/show":
-                        PrintPersons();
-                        Console.WriteLine("Введите следующую команду:");
-                        continue;
+
+                     PrintPersons();
+                     
+                     continue;
 
                     case "/stop":
-                        break;
 
+                        break;
 
                     case "/delete":
 
                         Console.WriteLine("Введите ID для удаления:");
-                        string input = Console.ReadLine();
+                        string? input = Console.ReadLine();
 
                         if (!int.TryParse(input, out int id))
                         {
@@ -69,26 +80,27 @@ namespace Persons
                 }
                 break;
 
-                await Task.Delay(1000, stoppingToken);
             }
-        }
-         public static (string fullName, string birthDate) GetPerson()
+            await Task.Delay(1000, stoppingToken);
 
-         {
+        }
+        public static (string? fullName, string? birthDate) GetPerson()
+
+        {
             Console.WriteLine("Введите ФИО:");
             var fullName = Console.ReadLine();
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
-
+           
             return (fullName, birthDate);
-         }
+                          
+        }
          public static void CreatePerson(string fullName, string birthDate)
 
          {
             var id = Persons.Count + 1;
             var person = new Person(fullName, birthDate, id);
             Persons.Add(person);
-
 
          }
          public static void PrintPersons()

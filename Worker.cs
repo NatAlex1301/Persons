@@ -1,60 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.Hosting;
 using SendGrid.Helpers.Errors.Model;
 
 namespace Persons
 {
     public class Worker() : BackgroundService
     {
-        public static List<Person> Persons { get; private set; } = new();        
+        public static List<Person> Persons { get; private set; } = new();
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
                          ("""
-                           Для ввода данных введите команду /new
-                           Для просмотра данных введите команду /show
-                           Для остановки приложения введите команду /stop
-                           Для удаления данных введите команду /delete            
-                           """);
+                          Для ввода данных введите команду /new
+                          Для просмотра данных введите команду /show
+                          Для остановки приложения введите команду /stop
+                          Для удаления данных введите команду /delete            
+                          """);
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 string? command = Console.ReadLine();
+
                 if (command == null)
                 {
                     Console.WriteLine("Нет данных");
                     continue;
                 }
-                
+
                 switch (command)
                 {
                     case "/new":
 
-                        var (fullName, birthDate) = GetPerson();
+                        var (fullName, birthDate) = ReadPersonDataFromConsole();
 
                         if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
                         {
                             Console.WriteLine("Нет данных");
-                            GetPerson();
+                            ReadPersonDataFromConsole();
                         }
                         else
                         {
                             CreatePerson(fullName, birthDate);
-                        }                                                  
-                     continue;
+                        }
+                        continue;
 
 
                     case "/show":
 
-                     PrintPersons();
-                     
-                     continue;
+                        PrintPersons();
+
+                        continue;
 
                     case "/stop":
 
@@ -75,6 +69,8 @@ namespace Persons
                         continue;
 
                     default:
+
+
                         Console.WriteLine("Вы ввели неверную команду");
                         continue;
                 }
@@ -82,38 +78,33 @@ namespace Persons
 
             }
             await Task.Delay(1000, stoppingToken);
-
         }
-        public static (string? fullName, string? birthDate) GetPerson()
-
+        public static (string? fullName, string? birthDate) ReadPersonDataFromConsole()
         {
             Console.WriteLine("Введите ФИО:");
             var fullName = Console.ReadLine();
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
-           
-            return (fullName, birthDate);
-                          
-        }
-         public static void CreatePerson(string fullName, string birthDate)
 
-         {
+            return (fullName, birthDate);
+        }
+        public static void CreatePerson(string fullName, string birthDate)
+        {
             var id = Persons.Count + 1;
             var person = new Person(fullName, birthDate, id);
             Persons.Add(person);
-
-         }
-         public static void PrintPersons()
-         {
+        }
+        public static void PrintPersons()
+        {
             foreach (var person in Persons)
             {
                 Console.WriteLine("ID:" + person.Id);
                 Console.WriteLine(person.FullName);
                 Console.WriteLine(person.BirthDate);
             }
-         }
-         public static void RemovePerson(int id)
-         {
+        }
+        public static void RemovePerson(int id)
+        {
             try
             {
                 var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
@@ -127,9 +118,7 @@ namespace Persons
                 Console.WriteLine($"Ошибка: {ex.Message}");
             }
             Console.ReadLine();
-
-         }                                                     
-                                            
+        }
     }
 }
 

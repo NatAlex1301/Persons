@@ -1,11 +1,8 @@
 ﻿
-using System;
-using System.Runtime.CompilerServices;
-using System.Collections.Generic;
-using SendGrid.Helpers.Errors.Model;
+
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
+
 
 namespace Persons
 {
@@ -17,10 +14,7 @@ namespace Persons
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
             var host = builder.Build();
-            await host.RunAsync();
-
-           
-
+            await host.RunAsync();           
 
         }
     }

@@ -8,5 +8,5 @@
         Id = id;
         FullName = fullName;
         BirthDate = birthDate;
-    }    
+    }
 }

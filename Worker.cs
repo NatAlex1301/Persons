@@ -13,7 +13,7 @@ namespace Persons
                           Для ввода данных введите команду /new
                           Для просмотра данных введите команду /show
                           Для остановки приложения введите команду /stop
-                          Для удаления данных введите команду /delete            
+                          Для удаления данных введите команду /delete
                           """);
 
             while (!stoppingToken.IsCancellationRequested)
@@ -36,22 +36,14 @@ namespace Persons
                             break;
 
                         case "/delete":
-                            Console.WriteLine("Введите ID для удаления:");
-                            string? input = Console.ReadLine();
-                            if (!int.TryParse(input, out int id))
-                            {
-                                Console.WriteLine("Введены некорректные данные");
-                                continue;
-                            }
-
-                            RemovePerson(id);
+                           
+                            RemovePerson();
                             continue;
 
                         default:
                             Console.WriteLine("Вы ввели неверную команду");
                             continue;
                     }
-                    throw new Exception("Нет данных");
                 }
                 catch (Exception ex)
                 {
@@ -89,8 +81,14 @@ namespace Persons
                 Console.WriteLine(person.BirthDate);
             }
         }
-        public static void RemovePerson(int id)
+        public static void RemovePerson()
         {
+            Console.WriteLine("Введите ID для удаления:");
+            string? input = Console.ReadLine();
+            if (!int.TryParse(input, out int id))
+            {
+                throw new Exception("Введены некорректные данные");
+            }           
             var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
                 throw new NotFoundException($"Человек с идентификатором {id} не найден");
             Persons.Remove(personToDelete);

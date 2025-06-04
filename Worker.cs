@@ -19,11 +19,6 @@ namespace Persons
             while (!stoppingToken.IsCancellationRequested)
             {
                 string? command = Console.ReadLine();
-                if (command == null)
-                {
-                    Console.WriteLine("Нет данных");
-                    continue;
-                }
                 try
                 {
                     switch (command)
@@ -56,9 +51,7 @@ namespace Persons
                             Console.WriteLine("Вы ввели неверную команду");
                             continue;
                     }
-                    continue;
                     throw new Exception("Нет данных");
-
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +68,9 @@ namespace Persons
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
             if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
+            {
                 throw new Exception("Нет данных");
+            }
 
             return (fullName, birthDate);
         }

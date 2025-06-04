@@ -6,7 +6,7 @@ namespace Persons
     public class Worker() : BackgroundService
     {
         public static List<Person> Persons { get; private set; } = new();
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
                          ("""
@@ -24,57 +24,62 @@ namespace Persons
                     Console.WriteLine("Нет данных");
                     continue;
                 }
-                switch (command)
+                try
                 {
-                    case "/new":
-                        var (fullName, birthDate) = ReadPersonDataFromConsole();
-                        if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
-                        {
-                            Console.WriteLine("Нет данных");
+                    switch (command)
+                    {
+                        case "/new":
+                            var (fullName, birthDate) = ReadPersonDataFromConsole();
+                            CreatePerson(fullName, birthDate);
                             continue;
-                        }                       
-                          
-                        CreatePerson(fullName, birthDate);                        
-                        continue;
 
-                    case "/show":
-                        PrintPersons();
-                        continue;
-
-                    case "/stop":
-                        break;
-
-                    case "/delete":
-                        Console.WriteLine("Введите ID для удаления:");
-                        string? input = Console.ReadLine();
-                        if (!int.TryParse(input, out int id))
-                        {
-                            Console.WriteLine("Введены некорректные данные");
+                        case "/show":
+                            PrintPersons();
                             continue;
-                        }
 
-                        RemovePerson(id);
-                        continue;
+                        case "/stop":
+                            break;
 
-                    default:
-                        Console.WriteLine("Вы ввели неверную команду");
-                        continue;
+                        case "/delete":
+                            Console.WriteLine("Введите ID для удаления:");
+                            string? input = Console.ReadLine();
+                            if (!int.TryParse(input, out int id))
+                            {
+                                Console.WriteLine("Введены некорректные данные");
+                                continue;
+                            }
+
+                            RemovePerson(id);
+                            continue;
+
+                        default:
+                            Console.WriteLine("Вы ввели неверную команду");
+                            continue;
+                    }
+                    continue;
+                    throw new Exception("Нет данных");
+
                 }
-                break; 
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Ошибка: {ex.Message}");
+                }
             }
 
-            await Task.Delay(1000, stoppingToken);
+            return Task.CompletedTask;
         }
-        public static (string? fullName, string? birthDate) ReadPersonDataFromConsole()
+        public static (string fullName, string birthDate) ReadPersonDataFromConsole()
         {
             Console.WriteLine("Введите ФИО:");
             var fullName = Console.ReadLine();
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
-            if(String.IsNullOrEmpty(fullName)||String.IsNullOrEmpty(birthDate))
+            if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
             {
-                Console.WriteLine("Ошибка:нет данных");
+                Console.WriteLine("Нет данных");
+                throw new Exception();
             }
+
             return (fullName, birthDate);
         }
         public static void CreatePerson(string fullName, string birthDate)
@@ -84,27 +89,20 @@ namespace Persons
             Persons.Add(person);
         }
         public static void PrintPersons()
-        {           
+        {
             foreach (var person in Persons)
-            {               
+            {
                 Console.WriteLine("ID:" + person.Id);
                 Console.WriteLine(person.FullName);
                 Console.WriteLine(person.BirthDate);
-            }           
+            }
         }
         public static void RemovePerson(int id)
         {
-            try
-            {
-                var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
-                    throw new NotFoundException($"Человек с идентификатором {id} не найден");
-                Persons.Remove(personToDelete);
-                Console.WriteLine("Данные удалены");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-            }           
+            var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
+                throw new NotFoundException($"Человек с идентификатором {id} не найден");
+            Persons.Remove(personToDelete);
+            Console.WriteLine("Данные удалены");
         }
     }
 }

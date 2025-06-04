@@ -75,10 +75,7 @@ namespace Persons
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
             if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
-            {
-                Console.WriteLine("Нет данных");
-                throw new Exception();
-            }
+                throw new Exception("Нет данных");
 
             return (fullName, birthDate);
         }

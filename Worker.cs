@@ -36,7 +36,6 @@ namespace Persons
                             break;
 
                         case "/delete":
-                           
                             RemovePerson();
                             continue;
 
@@ -88,7 +87,7 @@ namespace Persons
             if (!int.TryParse(input, out int id))
             {
                 throw new Exception("Введены некорректные данные");
-            }           
+            }
             var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
                 throw new NotFoundException($"Человек с идентификатором {id} не найден");
             Persons.Remove(personToDelete);

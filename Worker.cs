@@ -1,11 +1,10 @@
 ﻿using Microsoft.Extensions.Hosting;
-using SendGrid.Helpers.Errors.Model;
 
 namespace Persons
 {
     public class Worker() : BackgroundService
     {
-        public static List<Person> Persons { get; private set; } = new();
+        PersonsRepository personsRepository = new();
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
@@ -25,18 +24,21 @@ namespace Persons
                     {
                         case "/new":
                             var (fullName, birthDate) = ReadPersonDataFromConsole();
-                            CreatePerson(fullName, birthDate);
+                            personsRepository.CreatePerson(fullName, birthDate);
                             continue;
 
                         case "/show":
-                            PrintPersons();
+                         var _persons = personsRepository.FindPersons();
+                            PrintPersons(_persons);
                             continue;
 
                         case "/stop":
                             break;
 
                         case "/delete":
-                            RemovePerson();
+                           int id = ReadPersonsId();
+                           personsRepository.FindPerson(id);
+                           personsRepository.DeletePerson(id);
                             continue;
 
                         default:
@@ -65,22 +67,16 @@ namespace Persons
 
             return (fullName, birthDate);
         }
-        public static void CreatePerson(string fullName, string birthDate)
+        public static void PrintPersons(List<Person>_persons)
         {
-            var id = Persons.Count + 1;
-            var person = new Person(fullName, birthDate, id);
-            Persons.Add(person);
-        }
-        public static void PrintPersons()
-        {
-            foreach (var person in Persons)
+            foreach (var person in _persons)
             {
                 Console.WriteLine("ID:" + person.Id);
                 Console.WriteLine(person.FullName);
                 Console.WriteLine(person.BirthDate);
             }
         }
-        public static void RemovePerson()
+        public static int ReadPersonsId()
         {
             Console.WriteLine("Введите ID для удаления:");
             string? input = Console.ReadLine();
@@ -88,10 +84,8 @@ namespace Persons
             {
                 throw new Exception("Введены некорректные данные");
             }
-            var personToDelete = Persons.FirstOrDefault(x => x.Id == id) ??
-                throw new NotFoundException($"Человек с идентификатором {id} не найден");
-            Persons.Remove(personToDelete);
-            Console.WriteLine("Данные удалены");
+
+            return id;
         }
     }
 }

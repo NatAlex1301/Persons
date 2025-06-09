@@ -1,12 +1,16 @@
-﻿public class Person
+﻿namespace Persons
 {
-    public int Id { get; init; }
-    public string FullName { get; init; }
-    public string BirthDate { get; init; }
-    public Person(string fullName, string birthDate,int id)
+    public class Person
     {
-        Id = id;
-        FullName = fullName;
-        BirthDate = birthDate;
+        public int Id { get; init; }
+        public string FullName { get; init; }
+        public string BirthDate { get; init; }
+
+        public Person(string fullName, string birthDate, int id)
+        {
+            Id = id;
+            FullName = fullName;
+            BirthDate = birthDate;
+        }
     }
 }

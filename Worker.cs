@@ -5,6 +5,7 @@ namespace Persons
     public class Worker() : BackgroundService
     {
         private readonly PersonsRepository _personsRepository = new();
+
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
@@ -69,9 +70,9 @@ namespace Persons
             return (fullName, birthDate);
         }
 
-        public static void PrintPersons(List<Person>_persons)
+        public static void PrintPersons(List<Person> persons)
         {
-            foreach (var person in _persons)
+            foreach (var person in persons)
             {
                 Console.WriteLine("ID:" + person.Id);
                 Console.WriteLine(person.FullName);

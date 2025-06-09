@@ -4,7 +4,7 @@ namespace Persons
 {
     public class Worker() : BackgroundService
     {
-        PersonsRepository personsRepository = new();
+        private readonly PersonsRepository _personsRepository = new();
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             Console.WriteLine
@@ -24,21 +24,20 @@ namespace Persons
                     {
                         case "/new":
                             var (fullName, birthDate) = ReadPersonDataFromConsole();
-                            personsRepository.CreatePerson(fullName, birthDate);
+                            _personsRepository.CreatePerson(fullName, birthDate);
                             continue;
 
                         case "/show":
-                         var _persons = personsRepository.FindPersons();
-                            PrintPersons(_persons);
+                            var persons = _personsRepository.FindPersons();
+                            PrintPersons(persons);
                             continue;
 
                         case "/stop":
                             break;
 
                         case "/delete":
-                           int id = ReadPersonsId();
-                           personsRepository.FindPerson(id);
-                           personsRepository.DeletePerson(id);
+                            int id = ReadPersonsId();
+                            _personsRepository.DeletePerson(id);
                             continue;
 
                         default:
@@ -54,12 +53,14 @@ namespace Persons
 
             return Task.CompletedTask;
         }
+
         public static (string fullName, string birthDate) ReadPersonDataFromConsole()
         {
             Console.WriteLine("Введите ФИО:");
             var fullName = Console.ReadLine();
             Console.WriteLine("Введите дату рождения:");
             var birthDate = Console.ReadLine();
+
             if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
             {
                 throw new Exception("Нет данных");
@@ -67,6 +68,7 @@ namespace Persons
 
             return (fullName, birthDate);
         }
+
         public static void PrintPersons(List<Person>_persons)
         {
             foreach (var person in _persons)
@@ -76,10 +78,12 @@ namespace Persons
                 Console.WriteLine(person.BirthDate);
             }
         }
+
         public static int ReadPersonsId()
         {
             Console.WriteLine("Введите ID для удаления:");
             string? input = Console.ReadLine();
+
             if (!int.TryParse(input, out int id))
             {
                 throw new Exception("Введены некорректные данные");

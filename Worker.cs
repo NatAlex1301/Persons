@@ -24,7 +24,8 @@ namespace Persons
                     switch (command)
                     {
                         case "/new":
-                            var (fullName, birthDate) = ReadPersonDataFromConsole();
+                            var fullName = ReadFullNameFromConsole();
+                            var birthDate = ReadBirthDateFromConsole();
                             _personsRepository.CreatePerson(fullName, birthDate);
                             continue;
 
@@ -55,21 +56,32 @@ namespace Persons
             return Task.CompletedTask;
         }
 
-        public static (string fullName, string birthDate) ReadPersonDataFromConsole()
+        public static string ReadFullNameFromConsole()
         {
             Console.WriteLine("Введите ФИО:");
             var fullName = Console.ReadLine();
-            Console.WriteLine("Введите дату рождения:");
-            var birthDate = Console.ReadLine();
 
-            if (String.IsNullOrEmpty(fullName) || String.IsNullOrEmpty(birthDate))
+            if (String.IsNullOrEmpty(fullName))
             {
                 throw new Exception("Нет данных");
             }
 
-            return (fullName, birthDate);
+            return fullName;
+
         }
 
+        public static DateOnly ReadBirthDateFromConsole()
+        {
+            Console.WriteLine("Введите дату рождения в формате: ДД.ММ.ГГГГ");
+            var input = Console.ReadLine();
+
+            if (!DateOnly.TryParse(input, out DateOnly birthDate))
+            {
+                throw new Exception("Нет данных или неверный формат даты");
+            }
+
+            return birthDate;
+        }
         public static void PrintPersons(List<Person> persons)
         {
             foreach (var person in persons)

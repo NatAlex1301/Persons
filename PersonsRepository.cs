@@ -23,7 +23,7 @@
             return true;
         }
 
-        public Person CreatePerson(string fullName,DateOnly birthDate)
+        public Person CreatePerson(string fullName, DateOnly birthDate)
         {
             var id = _persons.Count + 1;
             var person = new Person(fullName, birthDate, id);

@@ -36,7 +36,7 @@
                 throw new Exception("Вы не ввели имя");
             }
 
-            _middleName = names?.Skip(2).FirstOrDefault();
+            _middleName = names.Skip(2).FirstOrDefault();
 
             if (string.IsNullOrEmpty(_middleName))
             {
